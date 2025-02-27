@@ -1,0 +1,23 @@
+:root {
+	--dark: #463C3D;
+	--white: #fff;
+	--primary: #F3B315;
+}
+
+body {
+	background: var(--dark);
+}
+
+#tasks {
+	background: var(--white);
+	border-radius: 25px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	color: var(--dark);
+}
