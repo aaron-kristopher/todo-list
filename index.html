@@ -11,6 +11,10 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 
+  <!--GOOGLE ICONS-->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
   <!--CALENDAR-->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@lemonadejs/modal/dist/style.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@lemonadejs/calendar/dist/style.min.css" />
@@ -28,42 +32,86 @@
 
 
 
-  <div class="container">
-    <div class="row py-5" id="tasks">
-      <img class="col-3 col-md-2 col-xl-1" src="assets/images/logo.png" alt="TaskHive">
+  <main class="d-flex align-items-center justify-content-center py-5">
 
-      <div class="col">
-        <div class="d-flex flex-column justify-content-center">
-          <h4 class="fw-bold" id="date-info"></h4>
-          <h5 id="time-info"></h5>
+    <div class="container" id="header">
+      <div class="row p-4">
+        <img class="col-4 col-md-2 col-xl-1" src="assets/images/logo.png" alt="TaskHive">
+
+        <div class="col">
+          <div class="d-flex flex-column justify-content-center">
+            <h4 class="fw-bold" id="date-info"></h4>
+            <h5 id="time-info"></h5>
+          </div>
         </div>
       </div>
 
-      <div class="row pt-5">
-        <div class="offset-1 col-md-4">
-          <div id='root' style='background-color: white;'></div>
-          <button class="btn btn-warning rounded-pill">Add Task</button>
+      <div class="row p-4">
+        <div class="col-12 col-lg-5 p-0 px-lg-3 pb-5 text-center">
+          <div class="mb-4" id='root' style='background-color: white;'></div>
+          <button class="btn btn-dark rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#add-task">Add
+            Task</button>
         </div>
 
-        <div class="offset-1 col-md-6">
+        <div class="offset-1 col-md-5" id="tasks-section">
           <h4 class="fw-bold">Hi, User</h4>
-          <h3>You have 0 task</h3>
+          <h3>You have <span id="counter">0 tasks</span></h3>
+          <div class="progress-wrapper pt-4">
+            <div class="d-flex justify-content-between">
+              <p>Your progress</p>
+              <p id="progress-percent">0%</p>
+            </div>
+            <div class="progress mb-4">
+              <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-warning"
+                role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+            </div>
+          </div>
         </div>
+      </div>
+
+    </div>
+  </main>
+
+
+  <div class="modal fade" data-bs-backdrop="static" role="dialog" id="add-task" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content position-relative p-4">
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="task" class="form-label">Task Name</label>
+              <input type="text" class="form-control" id="task" name="task">
+            </div>
+            <div class="mb-3">
+              <label for="desription" class="form-label">Description (optional)</label>
+              <textarea type="textarea" class="form-control" rows="3" id="description" name="task"></textarea>
+            </div>
+          </form>
+        </div>
+        <button
+          class="btn btn-primary btn-lg d-flex justify-content-center rounded-circle p-3 mx-auto position-absolute"
+          type="button" id="submit-task" data-bs-dismiss="modal"><span
+            class="material-symbols-outlined text-white">add</span></button>
       </div>
     </div>
-
 
   </div>
 
 
-
   <script type="text/javascript">
-
     const calendar = Calendar(document.getElementById('root'), {type: 'inline', value: new Date()});
 
     const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    var dateElement = document.getElementById("date-info");
-    var timeElement = document.getElementById("time-info");
+    const dateElement = document.getElementById("date-info");
+    const timeElement = document.getElementById("time-info");
+
+    const addTaskBtn = document.getElementById("submit-task");
+    const taskInput = document.getElementById("task");
+    const tasksSection = document.getElementById("tasks-section")
+
+    const counter = document.getElementById("counter");
+    const progressbar = document.getElementById("progress-bar");
+    const progressPercent = document.getElementById("progress-percent");
 
     function time() {
       var hours = new Date().getHours();
@@ -81,6 +129,70 @@
 
       dateElement.textContent = `${day}, ${date}`
     }
+
+    function updateCounter() {
+      const checkboxes = document.querySelectorAll("input[type=checkbox]");
+      var count = checkboxes.length;
+
+      counter.textContent = `${count} ${count == 1 ? "task" : "tasks"}`
+    }
+
+    function updateProgressbar() {
+      const checkboxes = document.querySelectorAll("input[type=checkbox]");
+      var progressCount = 0;
+      var totalProgress = 0;
+
+      checkboxes.forEach(checkbox => {
+        if (checkbox.checked)
+          progressCount++;
+      })
+
+      totalProgress = Math.round((progressCount / checkboxes.length) * 100);
+
+      progressPercent.textContent = `${totalProgress}%`
+      progressbar.style.width = `${totalProgress}%`;
+
+
+    }
+
+    function toggleTask(checkbox) {
+
+      updateProgressbar();
+
+      if (checkbox.checked) {
+        checkbox.nextSibling.style.textDecoration = "line-through";
+      } else {
+        checkbox.nextSibling.style.textDecoration = "none";
+      }
+    }
+
+    addTaskBtn.addEventListener("click", (event) => {
+      var taskName = taskInput.value;
+
+      if (taskName === "") return;
+
+      const formCheck = document.createElement("div");
+      const taskCheckbox = document.createElement("input");
+      const taskCheckLabel = document.createElement("label")
+
+      taskCheckbox.type = "checkbox";
+      taskCheckLabel.textContent = taskName;
+
+      formCheck.classList.add("form-check")
+      taskCheckbox.classList.add("form-check-input");
+      taskCheckLabel.classList.add("form-check-label", "ps-4")
+
+
+      taskCheckbox.addEventListener("change", () => toggleTask(taskCheckbox))
+
+      formCheck.appendChild(taskCheckbox);
+      formCheck.appendChild(taskCheckLabel);
+      tasksSection.appendChild(formCheck);
+
+      taskInput.value = "";
+      updateCounter();
+    });
+
 
     day();
     time();

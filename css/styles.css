@@ -1,14 +1,15 @@
 :root {
 	--dark: #463C3D;
 	--white: #fff;
-	--primary: #F3B315;
+	--gold: #F3B315;
+	--primary: #E59313
 }
 
 body {
 	background: var(--dark);
 }
 
-#tasks {
+#header {
 	background: var(--white);
 	border-radius: 25px;
 }
@@ -20,4 +21,32 @@ h4,
 h5,
 h6 {
 	color: var(--dark);
+}
+
+#root {
+	padding: .5rem;
+	border: 2px solid var(--dark);
+	border-radius: 25px;
+}
+
+.btn-primary {
+	background: var(--primary);
+	border-width: 0;
+}
+
+.btn-dark {
+	background: var(--dark);
+}
+
+.form-label {
+	color: var(--dark);
+}
+
+.modal-content {
+	border: 4px solid var(--primary);
+}
+
+#submit-task {
+	bottom: -35px;
+	left: 42%;
 }
