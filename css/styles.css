@@ -2,7 +2,8 @@
 	--dark: #463C3D;
 	--white: #fff;
 	--gold: #F3B315;
-	--primary: #E59313
+	--primary-500: #E59313;
+	--primary-700: #7D500A;
 }
 
 body {
@@ -54,8 +55,13 @@ h6 {
 }
 
 .btn-primary {
-	background: var(--primary);
+	background: var(--primary-500);
 	border-width: 0;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+	background: var(--primary-700);
 }
 
 .btn-dark {
@@ -67,7 +73,7 @@ h6 {
 }
 
 .modal-content {
-	border: 4px solid var(--primary);
+	border: 4px solid var(--primary-500);
 }
 
 #submit-task {

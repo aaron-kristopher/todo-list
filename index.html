@@ -12,9 +12,8 @@
     integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 
   <!--GOOGLE ICONS-->
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-
+  <link rel="stylesheet" <link rel="stylesheet" <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <!--CALENDAR-->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@lemonadejs/modal/dist/style.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@lemonadejs/calendar/dist/style.min.css" />
@@ -30,22 +29,20 @@
 
 <body>
 
-
-
   <main class="container d-flex align-items-center justify-content-center py-5">
 
     <div class="container-fluid" id="header">
 
       <ul class="nav nav-tabs justify-content-center" id="task-tabs" role="tablist">
+
         <li class="nav-item" role="presentation">
           <button class="nav-link active me-2" id="main-tab" data-bs-toggle="tab" data-bs-target="#main-tab-pane"
             type="button" role="tab" aria-controls="main-tab-pane" aria-selected="true">Main</button>
         </li>
 
         <li class="nav-item">
-          <button class="nav-link me-2" data-bs-toggle="modal" data-bs-target="#add-tab-modal">
-
-            <span class="material-symbols-outlined">add</span>
+          <button class="nav-link me-2" data-bs-toggle="modal" data-bs-target="#add-tab-modal" height="18px">
+            <img src="assets/images/add.svg" alt="Add Tab">
           </button>
         </li>
       </ul>
@@ -60,8 +57,9 @@
             <h5 id="time-info"></h5>
           </div>
         </div>
-      </div>
 
+        <!-- Delete button will be added here by JavaScript -->
+      </div>
 
       <!--TAB CONTENT-->
       <div class="tab-content" id="tasks-tab-content">
@@ -69,11 +67,15 @@
         <!--MAIN TASKS TAB-->
         <div class="tab-pane fade show active" id="main-tab-pane" role="tabpanel" tabindex="0">
           <div class="row p-4 bg-content align-items-center">
+
+            <!--ADD TASK OR TASK FILE SECTION-->
             <div class="col-12 col-lg-5 p-0 px-lg-3 pb-5 text-center">
+              <button class="btn btn-primary justify-item-center rounded-pill px-4 me-2" data-bs-toggle="modal"
+                data-bs-target="#add-task">Add Task</button>
               <button class="btn btn-dark justify-item-center rounded-pill px-4" data-bs-toggle="modal"
-                data-bs-target="#add-task">Add
-                Task</button>
+                data-bs-target="#import-tasks-modal">Import Tasks</button>
             </div>
+
 
             <div class="offset-lg-1 col-lg-5 tasks-section" id="tasks-section">
               <h4 class="fw-bold">Hi, User</h4>
@@ -142,6 +144,36 @@
     </div>
   </div>
 
+  <!-- Import Tasks Modal -->
+  <div class="modal fade" id="import-tasks-modal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content p-4">
+        <div class="modal-header">
+          <h5 class="modal-title">Import Tasks from File</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Upload a text file with tasks (one task per line).</p>
+          <p class="text-muted small">Format: "Task Name | Description" (description is optional)</p>
+          <form id="import-tasks-form">
+            <div class="mb-3">
+              <input type="file" class="form-control" id="task-file" accept=".txt" required>
+            </div>
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="mark-completed">
+              <label class="form-check-label" for="mark-completed">
+                Mark tasks as completed
+              </label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="import-tasks-btn">Import</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="js/script.js"></script>
   <!--BOOTSTRAP JS-->
