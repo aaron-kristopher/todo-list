@@ -72,7 +72,7 @@ submitTabBtn.addEventListener("click", function() {
 	  </button>
 	</div>
 
-	<div class="offset-1 col-md-5 tasks-section" id="${sanitizedTabName}-tasks-section">
+	<div class="offset-lg-1 col-md-5 tasks-section" id="${sanitizedTabName}-tasks-section">
 	  <h4 class="fw-bold">Hi, User</h4>
 	  <h3>You have <span id="${sanitizedTabName}-counter">0 tasks</span></h3>
 	  <div class="progress-wrapper pt-4">
