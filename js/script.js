@@ -1,5 +1,3 @@
-const calendar = Calendar(document.getElementById('root'), { type: 'inline', value: new Date() });
-
 const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const dateElement = document.getElementById("date-info");
 const timeElement = document.getElementById("time-info");
@@ -10,7 +8,6 @@ const submitTabBtn = document.getElementById("submit-tab");
 
 const addTaskBtn = document.getElementById("submit-task");
 const taskInput = document.getElementById("task");
-const tasksSection = document.getElementById("tasks-section")
 
 const counter = document.getElementById("counter");
 const progressbar = document.getElementById("progress-bar");
@@ -67,15 +64,14 @@ submitTabBtn.addEventListener("click", function() {
 	tabContent.setAttribute("tabindex", "0");
 
 	tabContent.innerHTML = `
-  <div class="row p-4 bg-content">
+  <div class="row p-4 bg-content align-items-center">
 	<div class="col-12 col-lg-5 p-0 px-lg-3 pb-5 text-center">
-	  <div class="mb-4" id="root" style="background-color: white;"></div>
 	  <button class="btn btn-dark rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#add-task">
 		Add Task
 	  </button>
 	</div>
 
-	<div class="offset-lg-1 col-lg-5" id="${sanitizedTabName}-tasks-section">
+	<div class="offset-1 col-md-5 tasks-section" id="${sanitizedTabName}-tasks-section">
 	  <h4 class="fw-bold">Hi, User</h4>
 	  <h3>You have <span id="${sanitizedTabName}-counter">0 tasks</span></h3>
 	  <div class="progress-wrapper pt-4">
@@ -153,12 +149,11 @@ addTaskBtn.addEventListener("click", (event) => {
 
 	// Get the currently active tab pane
 	const activeTab = document.querySelector(".tab-pane.active");
-	console.log(activeTab)
 
 	if (!activeTab) return; // Safety check
 
 	// Find the tasks section inside the active tab
-	const tasksSection = activeTab.querySelector(".col-md-5");
+	const tasksSection = activeTab.querySelector(".tasks-section");
 
 	// Create task elements
 	const formCheck = document.createElement("div");
@@ -173,7 +168,7 @@ addTaskBtn.addEventListener("click", (event) => {
 	formCheck.classList.add("form-check", "pb-3", "position-relative");
 	taskCheckbox.classList.add("form-check-input");
 	taskCheckLabel.classList.add("form-check-label", "ps-4");
-	close.classList.add("btn", "btn-primary", "btn-sm", "position-absolute", "end-0", "bottom-0", "remove-task");
+	close.classList.add("btn", "btn-primary", "btn-sm", "rounded-pill", "px-3", "position-absolute", "end-0", "top-0", "remove-task");
 
 	close.setAttribute("onclick", "removeTask(event)")
 
@@ -183,6 +178,7 @@ addTaskBtn.addEventListener("click", (event) => {
 	formCheck.appendChild(taskCheckbox);
 	formCheck.appendChild(taskCheckLabel);
 	formCheck.appendChild(close);
+	console.log(tasksSection);
 	tasksSection.appendChild(formCheck);
 
 
