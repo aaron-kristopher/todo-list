@@ -8,6 +8,7 @@ const submitTabBtn = document.getElementById("submit-tab");
 
 const addTaskBtn = document.getElementById("submit-task");
 const taskInput = document.getElementById("task");
+const taskDescriptionInput = document.getElementById("description");
 
 const counter = document.getElementById("counter");
 const progressbar = document.getElementById("progress-bar");
@@ -172,18 +173,24 @@ addTaskBtn.addEventListener("click", (event) => {
 
 	close.setAttribute("onclick", "removeTask(event)")
 
-
+	taskCheckLabel.setAttribute("data-bs-toggle", "tooltip");
+	taskCheckLabel.setAttribute("data-bs-placement", "top");
+	taskCheckLabel.setAttribute("data-bs-title", `${taskDescriptionInput.value}`);
 	taskCheckbox.addEventListener("change", () => toggleTask(taskCheckbox));
 
 	formCheck.appendChild(taskCheckbox);
 	formCheck.appendChild(taskCheckLabel);
 	formCheck.appendChild(close);
-	console.log(tasksSection);
 	tasksSection.appendChild(formCheck);
 
 
 	// Clear input field
 	taskInput.value = "";
+	taskDescriptionInput.value = ""
+
+
+	const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+	const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
 	updateCounter();
 });
