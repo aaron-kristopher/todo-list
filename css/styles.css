@@ -14,6 +14,16 @@ body {
 	border-radius: 25px;
 }
 
+.nav-tabs {
+	background: var(--dark);
+}
+
+.nav-item>.nav-link {
+	color: var(--dark);
+	background: rgba(255, 255, 255, .5);
+}
+
+
 h1,
 h2,
 h3,
@@ -21,6 +31,10 @@ h4,
 h5,
 h6 {
 	color: var(--dark);
+}
+
+#top {
+	border-radius: 25px 25px 0 0;
 }
 
 #root {
