@@ -1,4 +1,4 @@
-const calendar = Calendar(document.getElementById('root'), {type: 'inline', value: new Date()});
+const calendar = Calendar(document.getElementById('root'), { type: 'inline', value: new Date() });
 
 const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const dateElement = document.getElementById("date-info");
@@ -17,65 +17,65 @@ const progressbar = document.getElementById("progress-bar");
 const progressPercent = document.getElementById("progress-percent");
 
 function time() {
-  var hours = new Date().getHours();
-  var min = new Date().getMinutes();
+	var hours = new Date().getHours();
+	var min = new Date().getMinutes();
 
-  var meridiem = hours >= 12 ? "PM" : "AM";
-  hours %= 12;
-  min = min < 10 ? `0${min}` : min;
-  timeElement.textContent = `${hours}:${min} ${meridiem}`
+	var meridiem = hours >= 12 ? "PM" : "AM";
+	hours %= 12;
+	min = min < 10 ? `0${min}` : min;
+	timeElement.textContent = `${hours}:${min} ${meridiem}`
 }
 
 function day() {
-  var date = new Date().toLocaleDateString();
-  var day = weekday[new Date().getDay()];
+	var date = new Date().toLocaleDateString();
+	var day = weekday[new Date().getDay()];
 
-  dateElement.textContent = `${day}, ${date}`
+	dateElement.textContent = `${day}, ${date}`
 }
 
-submitTabBtn.addEventListener("click", function () {
-  const tabNameInput = document.getElementById("tab-name");
-  const tabName = tabNameInput.value.trim();
+submitTabBtn.addEventListener("click", function() {
+	const tabNameInput = document.getElementById("tab-name");
+	const tabName = tabNameInput.value.trim();
 
-  if (!tabName) return; // Prevent empty tab names
+	if (!tabName) return; // Prevent empty tab names
 
-  const sanitizedTabName = tabName.replace(/\s+/g, "-").toLowerCase(); // Convert spaces to dashes
+	const sanitizedTabName = tabName.replace(/\s+/g, "-").toLowerCase(); // Convert spaces to dashes
 
-  // Create tab elements
-  const li = document.createElement("li");
-  li.classList.add("nav-item");
-  li.role = "presentation";
+	// Create tab elements
+	const li = document.createElement("li");
+	li.classList.add("nav-item");
+	li.role = "presentation";
 
-  const button = document.createElement("button");
-  button.classList.add("nav-link", "me-2");
-  button.id = sanitizedTabName;
-  button.setAttribute("data-bs-toggle", "tab");
-  button.setAttribute("data-bs-target", `#${sanitizedTabName}-pane`);
-  button.setAttribute("type", "button");
-  button.setAttribute("role", "tab");
-  button.setAttribute("aria-controls", `${sanitizedTabName}-pane`);
-  button.setAttribute("aria-selected", "false");
-  button.textContent = tabName;
+	const button = document.createElement("button");
+	button.classList.add("nav-link", "me-2");
+	button.id = sanitizedTabName;
+	button.setAttribute("data-bs-toggle", "tab");
+	button.setAttribute("data-bs-target", `#${sanitizedTabName}-pane`);
+	button.setAttribute("type", "button");
+	button.setAttribute("role", "tab");
+	button.setAttribute("aria-controls", `${sanitizedTabName}-pane`);
+	button.setAttribute("aria-selected", "false");
+	button.textContent = tabName;
 
-  li.appendChild(button);
-  taskTabs.insertBefore(li, taskTabs.lastElementChild);
+	li.appendChild(button);
+	taskTabs.insertBefore(li, taskTabs.lastElementChild);
 
-  const tabContent = document.createElement("div");
-  tabContent.classList.add("tab-pane", "fade");
-  tabContent.id = `${sanitizedTabName}-pane`;
-  tabContent.setAttribute("role", "tabpanel");
-  tabContent.setAttribute("tabindex", "0");
+	const tabContent = document.createElement("div");
+	tabContent.classList.add("tab-pane", "fade");
+	tabContent.id = `${sanitizedTabName}-pane`;
+	tabContent.setAttribute("role", "tabpanel");
+	tabContent.setAttribute("tabindex", "0");
 
-  tabContent.innerHTML = `
-  <div class="row p-4">
+	tabContent.innerHTML = `
+  <div class="row p-4 bg-content">
 	<div class="col-12 col-lg-5 p-0 px-lg-3 pb-5 text-center">
-	  <div class="mb-4" id="${sanitizedTabName}-root" style="background-color: white;"></div>
+	  <div class="mb-4" id="root" style="background-color: white;"></div>
 	  <button class="btn btn-dark rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#add-task">
 		Add Task
 	  </button>
 	</div>
 
-	<div class="offset-1 col-md-5" id="${sanitizedTabName}-tasks-section">
+	<div class="offset-lg-1 col-lg-5" id="${sanitizedTabName}-tasks-section">
 	  <h4 class="fw-bold">Hi, User</h4>
 	  <h3>You have <span id="${sanitizedTabName}-counter">0 tasks</span></h3>
 	  <div class="progress-wrapper pt-4">
@@ -93,95 +93,113 @@ submitTabBtn.addEventListener("click", function () {
   </div>
 `;
 
-  tasksTabContent.appendChild(tabContent);
+	tasksTabContent.appendChild(tabContent);
 
-  // Reset input field (Bootstrap handles modal closing)
-  tabNameInput.value = "";
+	// Reset input field (Bootstrap handles modal closing)
+	tabNameInput.value = "";
 });
+
 function updateCounter() {
-  const activeTab = document.querySelector(".tab-pane.active");  
-  if (!activeTab) return; // Safety check
+	const activeTab = document.querySelector(".tab-pane.active");
+	if (!activeTab) return; // Safety check
 
-  const checkboxes = activeTab.querySelectorAll("input[type=checkbox]");
-  var count = checkboxes.length;
+	const checkboxes = activeTab.querySelectorAll("input[type=checkbox]");
+	var count = checkboxes.length;
 
-  // Update the counter inside the active tab
-  const counter = activeTab.querySelector("[id$='-counter']");
-  if (counter) {
-    counter.textContent = `${count} ${count === 1 ? "task" : "tasks"}`;
-  }
+	// Update the counter inside the active tab
+	const counter = activeTab.querySelector("[id$='-counter']");
+	if (counter) {
+		counter.textContent = `${count} ${count === 1 ? "task" : "tasks"}`;
+	}
+	updateProgressbar();
 }
 
 function updateProgressbar() {
-  const activeTab = document.querySelector(".tab-pane.active");
-  if (!activeTab) return; // Safety check
+	const activeTab = document.querySelector(".tab-pane.active");
+	if (!activeTab) return; // Safety check
 
-  const checkboxes = activeTab.querySelectorAll("input[type=checkbox]");
-  let progressCount = 0;
-  let totalProgress = 0;
+	const checkboxes = activeTab.querySelectorAll("input[type=checkbox]");
+	let progressCount = 0;
+	let totalProgress = 0;
 
-  checkboxes.forEach(checkbox => {
-    if (checkbox.checked) progressCount++;
-  });
+	checkboxes.forEach(checkbox => {
+		if (checkbox.checked) progressCount++;
+	});
 
-  totalProgress = checkboxes.length > 0 ? Math.round((progressCount / checkboxes.length) * 100) : 0;
+	totalProgress = checkboxes.length > 0 ? Math.round((progressCount / checkboxes.length) * 100) : 0;
 
-  // Update progress bar and percentage inside the active tab
-  const progressPercent = activeTab.querySelector("[id$='-progress-percent']");
-  const progressbar = activeTab.querySelector("[id$='-progress-bar']");
+	// Update progress bar and percentage inside the active tab
+	const progressPercent = activeTab.querySelector("[id$='-progress-percent']");
+	const progressbar = activeTab.querySelector("[id$='-progress-bar']");
 
-  if (progressPercent) progressPercent.textContent = `${totalProgress}%`;
-  if (progressbar) progressbar.style.width = `${totalProgress}%`;
+	if (progressPercent) progressPercent.textContent = `${totalProgress}%`;
+	if (progressbar) progressbar.style.width = `${totalProgress}%`;
 }
 
 function toggleTask(checkbox) {
 
-  updateProgressbar();
+	updateProgressbar();
 
-  if (checkbox.checked) {
-	checkbox.nextSibling.style.textDecoration = "line-through";
-  } else {
-	checkbox.nextSibling.style.textDecoration = "none";
-  }
+	if (checkbox.checked) {
+		checkbox.nextSibling.style.textDecoration = "line-through";
+	} else {
+		checkbox.nextSibling.style.textDecoration = "none";
+	}
 }
 
 addTaskBtn.addEventListener("click", (event) => {
-  var taskName = taskInput.value.trim();
-  if (taskName === "") return;
+	var taskName = taskInput.value.trim();
+	if (taskName === "") return;
 
-  // Get the currently active tab pane
-  const activeTab = document.querySelector(".tab-pane.active");
-  console.log(activeTab)
-  
-  if (!activeTab) return; // Safety check
+	// Get the currently active tab pane
+	const activeTab = document.querySelector(".tab-pane.active");
+	console.log(activeTab)
 
-  // Find the tasks section inside the active tab
-  const tasksSection = activeTab.querySelector(".col-md-5");
+	if (!activeTab) return; // Safety check
 
-  // Create task elements
-  const formCheck = document.createElement("div");
-  const taskCheckbox = document.createElement("input");
-  const taskCheckLabel = document.createElement("label");
+	// Find the tasks section inside the active tab
+	const tasksSection = activeTab.querySelector(".col-md-5");
 
-  taskCheckbox.type = "checkbox";
-  taskCheckLabel.textContent = taskName;
+	// Create task elements
+	const formCheck = document.createElement("div");
+	const taskCheckbox = document.createElement("input");
+	const taskCheckLabel = document.createElement("label");
+	const close = document.createElement("button");
 
-  formCheck.classList.add("form-check");
-  taskCheckbox.classList.add("form-check-input");
-  taskCheckLabel.classList.add("form-check-label", "ps-4");
+	taskCheckbox.type = "checkbox";
+	taskCheckLabel.textContent = taskName;
+	close.textContent = "remove";
 
-  taskCheckbox.addEventListener("change", () => toggleTask(taskCheckbox));
+	formCheck.classList.add("form-check", "pb-3", "position-relative");
+	taskCheckbox.classList.add("form-check-input");
+	taskCheckLabel.classList.add("form-check-label", "ps-4");
+	close.classList.add("btn", "btn-primary", "btn-sm", "position-absolute", "end-0", "bottom-0", "remove-task");
 
-  formCheck.appendChild(taskCheckbox);
-  formCheck.appendChild(taskCheckLabel);
-  tasksSection.appendChild(formCheck);
+	close.setAttribute("onclick", "removeTask(event)")
 
-  // Clear input field
-  taskInput.value = "";
 
-  updateCounter();
+	taskCheckbox.addEventListener("change", () => toggleTask(taskCheckbox));
+
+	formCheck.appendChild(taskCheckbox);
+	formCheck.appendChild(taskCheckLabel);
+	formCheck.appendChild(close);
+	tasksSection.appendChild(formCheck);
+
+
+	// Clear input field
+	taskInput.value = "";
+
+	updateCounter();
 });
 
+function removeTask(event) {
+	const taskForm = event.target.parentNode;
+	const taskFormContainer = taskForm.parentNode;
+
+	taskFormContainer.removeChild(taskForm);
+	updateCounter();
+	updateProgressbar();
+}
 
 day();
 time();
