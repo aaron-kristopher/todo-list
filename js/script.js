@@ -189,10 +189,9 @@ function restoreTasks() {
 
 // Fix the ID references for the main tab in these functions
 function updateCounterForTab(tabId) {
-	// Special handling for main tab
 	let tasksSection;
 	if (tabId === "main") {
-		tasksSection = document.getElementById("tasks-section"); // Main tab has a special ID
+		tasksSection = document.getElementById("main-tasks-section"); // Main tab has a special ID
 	} else {
 		tasksSection = document.getElementById(`${tabId}-tasks-section`);
 	}
@@ -255,7 +254,7 @@ function createTabElement(tabName, tabId, activateTab = true) {
 	tabContent.innerHTML = `
   <div class="row p-4 bg-content align-items-center">
     <div class="col-12 col-lg-5 p-0 px-lg-3 pb-5 text-center">
-      <button class="btn btn-primary justify-item-center rounded-pill px-4 me-2" data-bs-toggle="modal"
+      <button class="btn btn-primary justify-item-center rounded-pill px-4 mb-4 mb-sm-0 me-2" data-bs-toggle="modal"
 	data-bs-target="#add-task">Add Task</button>
       <button class="btn btn-dark justify-item-center rounded-pill px-4" data-bs-toggle="modal"
 	data-bs-target="#import-tasks-modal">Import Tasks</button>
@@ -394,10 +393,9 @@ function updateCounter() {
 
 // Update progress bar for a specific tab
 function updateProgressbarForTab(tabId) {
-	// Special handling for main tab
 	let tasksSection;
 	if (tabId === "main") {
-		tasksSection = document.getElementById("tasks-section"); // Main tab has a special ID
+		tasksSection = document.getElementById("main-tasks-section"); // Main tab has a special ID
 	} else {
 		tasksSection = document.getElementById(`${tabId}-tasks-section`);
 	}
