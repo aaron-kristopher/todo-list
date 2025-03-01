@@ -67,11 +67,10 @@ function importTasksFromFile() {
 			}
 		});
 
+
 		// Save to localStorage
 		saveToLocalStorage();
 
-		// Update counters
-		updateCounter();
 
 		// Close the modal
 		const modal = bootstrap.Modal.getInstance(document.getElementById('import-tasks-modal'));
@@ -125,6 +124,11 @@ function initLocalStorage() {
 	if (savedData) {
 		appData = JSON.parse(savedData);
 
+		// Ensure main tab exists in data structure
+		if (!appData.tasks["main"]) {
+			appData.tasks["main"] = [];
+		}
+
 		// Restore tabs
 		restoreTabs();
 
@@ -140,6 +144,9 @@ function initLocalStorage() {
 				tab.show();
 			}
 		}
+	} else {
+		// If no saved data, initialize with an empty main tab
+		appData.tasks["main"] = [];
 	}
 }
 
@@ -178,6 +185,37 @@ function restoreTasks() {
 		// Update counters for this tab
 		updateCounterForTab(tabId);
 	});
+}
+
+// Fix the ID references for the main tab in these functions
+function updateCounterForTab(tabId) {
+	// Special handling for main tab
+	let tasksSection;
+	if (tabId === "main") {
+		tasksSection = document.getElementById("tasks-section"); // Main tab has a special ID
+	} else {
+		tasksSection = document.getElementById(`${tabId}-tasks-section`);
+	}
+
+	if (!tasksSection) return;
+
+	const checkboxes = tasksSection.querySelectorAll("input[type=checkbox]");
+	const count = checkboxes.length;
+
+	// Update the counter display
+	let counter;
+	if (tabId === "main") {
+		counter = document.getElementById("main-counter");
+	} else {
+		counter = document.getElementById(`${tabId}-counter`);
+	}
+
+	if (counter) {
+		counter.textContent = `${count} ${count === 1 ? "task" : "tasks"}`;
+	}
+
+	// Update progress bar
+	updateProgressbarForTab(tabId);
 }
 
 // Helper function to create a tab element
@@ -330,7 +368,7 @@ function deleteTab() {
 
 		// Set main tab as active
 		appData.activeTab = "main";
-		const mainTab = document.getElementById("main-tab");
+		const mainTab = document.getElementById("main");
 		const tab = new bootstrap.Tab(mainTab);
 		tab.show();
 
@@ -340,26 +378,30 @@ function deleteTab() {
 }
 
 // Update counter for a specific tab
-function updateCounterForTab(tabId) {
-	const tasksSection = document.getElementById(`${tabId}-tasks-section`);
-	if (!tasksSection) return;
+function updateCounter() {
+	const activeTab = document.querySelector(".tab-pane.active");
+	if (!activeTab) return; // Safety check
 
-	const checkboxes = tasksSection.querySelectorAll("input[type=checkbox]");
-	const count = checkboxes.length;
+	const tabId = activeTab.id.replace("-pane", "");
 
-	// Update the counter display
-	const counter = document.getElementById(`${tabId}-counter`);
-	if (counter) {
-		counter.textContent = `${count} ${count === 1 ? "task" : "tasks"}`;
+	// Special handling for main tab
+	if (tabId === "main") {
+		updateCounterForTab("main");
+	} else {
+		updateCounterForTab(tabId);
 	}
-
-	// Update progress bar
-	updateProgressbarForTab(tabId);
 }
 
 // Update progress bar for a specific tab
 function updateProgressbarForTab(tabId) {
-	const tasksSection = document.getElementById(`${tabId}-tasks-section`);
+	// Special handling for main tab
+	let tasksSection;
+	if (tabId === "main") {
+		tasksSection = document.getElementById("tasks-section"); // Main tab has a special ID
+	} else {
+		tasksSection = document.getElementById(`${tabId}-tasks-section`);
+	}
+
 	if (!tasksSection) return;
 
 	const checkboxes = tasksSection.querySelectorAll("input[type=checkbox]");
@@ -372,8 +414,14 @@ function updateProgressbarForTab(tabId) {
 	const totalProgress = checkboxes.length > 0 ? Math.round((completedCount / checkboxes.length) * 100) : 0;
 
 	// Update progress indicators
-	const progressPercent = document.getElementById(`${tabId}-progress-percent`);
-	const progressBar = document.getElementById(`${tabId}-progress-bar`);
+	let progressPercent, progressBar;
+	if (tabId === "main") {
+		progressPercent = document.getElementById("main-progress-percent");
+		progressBar = document.getElementById("main-progress-bar");
+	} else {
+		progressPercent = document.getElementById(`${tabId}-progress-percent`);
+		progressBar = document.getElementById(`${tabId}-progress-bar`);
+	}
 
 	if (progressPercent) progressPercent.textContent = `${totalProgress}%`;
 	if (progressBar) progressBar.style.width = `${totalProgress}%`;
@@ -440,6 +488,7 @@ function handleTaskSubmission() {
 
 	// Find the tasks section inside the active tab
 	const tasksSection = activeTab.querySelector(".tasks-section");
+	if (!tasksSection) return; // Safety check
 
 	// Create task elements
 	createTaskElement(tasksSection, taskName, description, false);
@@ -536,7 +585,13 @@ function updateProgressbar() {
 	if (!activeTab) return; // Safety check
 
 	const tabId = activeTab.id.replace("-pane", "");
-	updateProgressbarForTab(tabId);
+
+	// Special handling for main tab
+	if (tabId === "main") {
+		updateProgressbarForTab("main");
+	} else {
+		updateProgressbarForTab(tabId);
+	}
 
 	// Save task completion status to localStorage
 	saveTasksForActiveTab();
@@ -548,22 +603,38 @@ function saveTasksForActiveTab() {
 	if (!activeTab) return;
 
 	const tabId = activeTab.id.replace("-pane", "");
-	const tasksSection = activeTab.querySelector(".tasks-section");
+
+	// Special handling for main tab
+	let tasksSection;
+	if (tabId === "main") {
+		tasksSection = document.getElementById("tasks-section");
+	} else {
+		tasksSection = activeTab.querySelector(".tasks-section");
+	}
+
+	if (!tasksSection) return;
+
 	const taskElements = tasksSection.querySelectorAll(".form-check");
 
-	// Clear existing tasks for this tab
-	appData.tasks[tabId] = [];
+	// Ensure array exists
+	if (!appData.tasks[tabId]) {
+		appData.tasks[tabId] = [];
+	} else {
+		// Clear existing tasks for this tab
+		appData.tasks[tabId] = [];
+	}
 
 	// Rebuild tasks array from DOM
 	taskElements.forEach(taskElement => {
 		const checkbox = taskElement.querySelector("input[type=checkbox]");
 		const label = taskElement.querySelector(".form-check-label");
-
-		appData.tasks[tabId].push({
-			text: label.textContent,
-			description: label.getAttribute("data-bs-title") || "",
-			completed: checkbox.checked
-		});
+		if (checkbox && label) {
+			appData.tasks[tabId].push({
+				text: label.textContent,
+				description: label.getAttribute("data-bs-title") || "",
+				completed: checkbox.checked
+			});
+		}
 	});
 
 	// Save to localStorage
@@ -585,15 +656,36 @@ function toggleTask(checkbox) {
 
 	// Get active tab
 	const activeTab = document.querySelector(".tab-pane.active");
+	if (!activeTab) return; // Safety check
+
 	const tabId = activeTab.id.replace("-pane", "");
 
-	// Find and update the task in appData
-	const taskIndex = appData.tasks[tabId]?.findIndex(task => task.text === taskText);
-	if (taskIndex !== -1 && appData.tasks[tabId]) {
-		appData.tasks[tabId][taskIndex].completed = checkbox.checked;
-		// Save immediately to ensure state is preserved
-		saveToLocalStorage();
+	// Ensure task array exists for this tab
+	if (!appData.tasks[tabId]) {
+		appData.tasks[tabId] = [];
+		console.log(`Created tasks array for tab: ${tabId}`);
 	}
+
+	// Find task in the array
+	const taskIndex = appData.tasks[tabId].findIndex(task => task.text === taskText);
+
+	if (taskIndex !== -1) {
+		// Update existing task
+		appData.tasks[tabId][taskIndex].completed = checkbox.checked;
+		console.log(`Updated task "${taskText}" in ${tabId} to ${checkbox.checked}`);
+	} else {
+		// If task not found, add it (for robustness)
+		const description = taskLabel.getAttribute("data-bs-title") || "";
+		appData.tasks[tabId].push({
+			text: taskText,
+			description: description,
+			completed: checkbox.checked
+		});
+		console.log(`Added missing task "${taskText}" to ${tabId}`);
+	}
+
+	// Save immediately to ensure state is preserved
+	saveToLocalStorage();
 
 	// Update progress bar
 	updateProgressbar();
@@ -642,11 +734,16 @@ function initApp() {
 	setInterval(time, 60000);
 
 	// Set up event listener for main tab
-	const mainTab = document.getElementById("main-tab");
+	const mainTab = document.getElementById("main");
 	mainTab.addEventListener('shown.bs.tab', () => {
 		appData.activeTab = "main";
 		saveToLocalStorage();
 	});
+
+	// Make sure main tab data is properly initialized
+	if (!appData.tasks["main"]) {
+		appData.tasks["main"] = [];
+	}
 
 	// Add delete tab button
 	const topDiv = document.getElementById("top");
