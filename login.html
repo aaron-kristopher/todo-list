@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskHive - Login</title> <!-- Changed title slightly -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/login-css.css"> <!-- Make sure this path is correct -->
+    <meta name="theme-color" content="#00796b">
+</head>
+
+<body>
+    <div class="container" id="container"> <!-- Removed PHP class injection -->
+        <div class="form-container">
+            <!-- Login Form -->
+            <div class="login-form active-form" id="login-form-container"> <!-- Changed id slightly for clarity -->
+                <div class="form-content">
+                    <form id="login-form-element"> <!-- Removed method and action -->
+                        <h3>Login</h3>
+                        <div id="login-message" class="api-message"></div> <!-- For messages -->
+                        <div class="input-group">
+                            <input type="text" id="login-username" name="username" placeholder="Username"
+                                autocomplete="username" required>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" id="login-password" name="password" placeholder="Password"
+                                autocomplete="current-password" required>
+                        </div>
+                        <!-- "Remember me" removed for simplicity in this context -->
+                        <button type="submit" name="login">Log In</button>
+                    </form>
+                    <div class="switch-form">
+                        Don't have an account? <a href="#" class="register-link">Register</a>
+                    </div>
+                </div>
+                <div class="form-side">
+                    <div class="welcome-text">Welcome back.</div>
+                    <div class="action-text" id="to-register">LOGIN</div>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div class="register-form" id="register-form-container"> <!-- Changed id slightly for clarity -->
+                <div class="form-side">
+                    <div class="welcome-text">Welcome to TaskHive.</div> <!-- Changed name -->
+                    <div class="action-text" id="to-login">REGISTER</div>
+                </div>
+                <div class="form-content">
+                    <form id="register-form-element"> <!-- Removed method and action, and enctype -->
+                        <h3>Register</h3>
+                        <div id="register-message" class="api-message"></div> <!-- For messages -->
+                        <div class="input-group">
+                            <input type="text" id="register-username" name="reg_username" placeholder="Username"
+                                autocomplete="username" required>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" id="register-password" name="reg_password" placeholder="Password"
+                                autocomplete="new-password" required>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" id="register-confirm-password" name="confirm_password"
+                                placeholder="Confirm Password" autocomplete="new-password" required>
+                        </div>
+                        <button type="submit" name="register">Register</button>
+                    </form>
+                    <div class="switch-form">
+                        Already have an account? <a href="#" class="login-link">Log In</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Ensure this script runs after the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            const API_BASE_URL = ''; // Assuming API is hosted on the same origin
+            // If your Flask app runs on http://<ec2_ip>:5000
+            // and this HTML is served from a different origin,
+            // you'll need: const API_BASE_URL = 'http://<your_ec2_ip>:5000';
+
+            const container = document.getElementById('container');
+            const registerLink = document.querySelector('.register-link');
+            const loginLink = document.querySelector('.login-link');
+
+            const loginForm = document.getElementById('login-form-element');
+            const registerForm = document.getElementById('register-form-element');
+
+            const loginMessageDiv = document.getElementById('login-message');
+            const registerMessageDiv = document.getElementById('register-message');
+
+            // Toggle between login and register forms
+            if (registerLink) {
+                registerLink.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    container.classList.add('right-panel-active');
+                    loginMessageDiv.textContent = ''; // Clear messages
+                    registerMessageDiv.textContent = '';
+                });
+            }
+
+            if (loginLink) {
+                loginLink.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    container.classList.remove('right-panel-active');
+                    loginMessageDiv.textContent = ''; // Clear messages
+                    registerMessageDiv.textContent = '';
+                });
+            }
+
+            // Handle Login Form Submission
+            if (loginForm) {
+                loginForm.addEventListener('submit', async function (event) {
+                    event.preventDefault();
+                    loginMessageDiv.textContent = ''; // Clear previous messages
+                    loginMessageDiv.classList.remove('success', 'error');
+
+
+                    const username = document.getElementById('login-username').value;
+                    const password = document.getElementById('login-password').value;
+
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({username, password}),
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok && data.success) {
+                            loginMessageDiv.textContent = 'Login successful! Redirecting...';
+                            loginMessageDiv.classList.add('success');
+                            // Store user info if needed (e.g., username for display)
+                            // For session-based auth, the cookie is handled automatically.
+                            // We might store some non-sensitive info in localStorage for UI purposes.
+                            localStorage.setItem('taskHiveUser', JSON.stringify({username: data.username, userId: data.userId}));
+                            window.location.href = 'index.html'; // Redirect to the main app page
+                        } else {
+                            loginMessageDiv.textContent = data.message || 'Login failed. Please try again.';
+                            loginMessageDiv.classList.add('error');
+                        }
+                    } catch (error) {
+                        console.error('Login error:', error);
+                        loginMessageDiv.textContent = 'An error occurred. Please try again later.';
+                        loginMessageDiv.classList.add('error');
+                    }
+                });
+            }
+
+            // Handle Register Form Submission
+            if (registerForm) {
+                registerForm.addEventListener('submit', async function (event) {
+                    event.preventDefault();
+                    registerMessageDiv.textContent = ''; // Clear previous messages
+                    registerMessageDiv.classList.remove('success', 'error');
+
+                    const username = document.getElementById('register-username').value;
+                    const password = document.getElementById('register-password').value;
+                    const confirmPassword = document.getElementById('register-confirm-password').value;
+
+                    if (password !== confirmPassword) {
+                        registerMessageDiv.textContent = 'Passwords do not match.';
+                        registerMessageDiv.classList.add('error');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({username, password}),
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok && data.success) {
+                            registerMessageDiv.textContent = data.message || 'Registration successful! Please log in.';
+                            registerMessageDiv.classList.add('success');
+                            registerForm.reset(); // Clear the form
+                            // Optionally switch to login form
+                            // container.classList.remove('right-panel-active');
+                        } else {
+                            registerMessageDiv.textContent = data.message || 'Registration failed. Please try again.';
+                            registerMessageDiv.classList.add('error');
+                        }
+                    } catch (error) {
+                        console.error('Registration error:', error);
+                        registerMessageDiv.textContent = 'An error occurred during registration. Please try again later.';
+                        registerMessageDiv.classList.add('error');
+                    }
+                });
+            }
+        });
+    </script>
+    <style>
+        /* Basic styles for messages for quick feedback */
+        .api-message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .api-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .api-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</body>
+
+</html>
