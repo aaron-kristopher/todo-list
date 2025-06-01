@@ -1,10 +1,11 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
 from flask_cors import CORS
 import logging
 
 import dynamodb_operations as ddb
 
 app = Flask(__name__)
+app.secret_key="I_AM_TOO_LAZY_TO_GENERATE_RANDOM_KEY_420_69"
 CORS(
     app
 )  # This allows all origins by default. For production, configure it more strictly.
@@ -15,6 +16,15 @@ logging.basicConfig(
 )
 app.logger.setLevel(logging.INFO)  # Ensure Flask's logger also picks up INFO level
 
+@app.route("/")
+def index_page():
+    if "user_id" not in session:
+        return redirect(url_for("login_page"))
+    return send_from_directory(app.root_path, "index.html")
+
+@app.route("/login")
+def login_page():
+    return send_from_directory(app.root_path, "login.html")
 
 @app.route("/api/auth/register", methods=["POST"])
 def api_register_user():
