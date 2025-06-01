@@ -306,12 +306,6 @@ function createTaskElement(tasksSection, taskText, taskDescription, isCompleted)
 
 	close.setAttribute("onclick", "removeTask(event)");
 
-	if (taskDescription) {
-		taskCheckLabel.setAttribute("data-bs-toggle", "tooltip");
-		taskCheckLabel.setAttribute("data-bs-placement", "top");
-		taskCheckLabel.setAttribute("data-bs-title", taskDescription);
-	}
-
 	// Apply text decoration if task is completed
 	if (isCompleted) {
 		taskCheckLabel.style.textDecoration = "line-through";
@@ -327,9 +321,20 @@ function createTaskElement(tasksSection, taskText, taskDescription, isCompleted)
 	formCheck.appendChild(close);
 	tasksSection.appendChild(formCheck);
 
-	// Initialize tooltip if description exists
 	if (taskDescription) {
-		new bootstrap.Tooltip(taskCheckLabel);
+		const taskDescriptionDiv = document.createElement("div");
+		const taskDescriptionText = document.createTextNode(taskDescription);
+		const taskId = Math.floor((Math.random() * 1000) + 1);
+
+		formCheck.setAttribute("data-bs-toggle", "collapse");
+		formCheck.setAttribute("data-bs-target", `#task-${taskId}`);
+		taskDescriptionDiv.setAttribute("id", `task-${taskId}`);
+
+		taskDescriptionDiv.classList.add("collapse", "pt-3", "ps-4", "fst-italic");
+		taskDescriptionDiv.style.color = "#a7999a";
+
+		taskDescriptionDiv.appendChild(taskDescriptionText);
+		formCheck.appendChild(taskDescriptionDiv);
 	}
 
 	// Return the created element for potential further handling
